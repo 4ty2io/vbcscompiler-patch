@@ -1,0 +1,11 @@
+bin/
+obj/
+dist/
+artifacts/
+TestResults/
+.vs/
+.vscode/
+.idea/
+*.user
+*.binlog
+*.nettrace

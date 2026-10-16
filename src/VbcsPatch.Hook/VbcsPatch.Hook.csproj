@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Startup hook entry point. Targets netstandard2.0 on purpose: if the hook is ever activated through
+    DOTNET_STARTUP_HOOKS it gets loaded into every .NET process (including net6/net8 apps), so it must
+    load anywhere and do nothing outside VBCSCompiler. The real patch (VbcsPatch.dll) is only loaded
+    after the process check passes.
+  -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace />
+  </PropertyGroup>
+
+</Project>

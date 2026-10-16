@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    In-process stand-in for VBCSCompiler: several compilations emitting concurrently in one process,
+    with server GC, on the exact Roslyn binaries (ReadyToRun included) of the SDK doing the build.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <!-- MonoMod.Core 1.4.0-prerelease.1 ships Core110Runtime, but its build-time TFM check predates net11.0. -->
+    <MonoMod_ReallySkipCheckTargetRuntime>true</MonoMod_ReallySkipCheckTargetRuntime>
+    <NoWarn>$(NoWarn);MSB3277;RS1036;RS1038;RS2008</NoWarn>
+    <RoslynRuntimeDir Condition="'$(RoslynRuntimeDir)' == ''">$([MSBuild]::EnsureTrailingSlash('$(NetCoreSdkRoot)'))Roslyn/bincore</RoslynRuntimeDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>$(RoslynRuntimeDir)/Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>$(RoslynRuntimeDir)/Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\..\src\VbcsPatch\VbcsPatch.csproj" />
+  </ItemGroup>
+
+</Project>

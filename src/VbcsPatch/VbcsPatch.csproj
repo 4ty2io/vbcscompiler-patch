@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- VBCSCompiler from SDK 10.x runs on .NET 10, from SDK 11.x on .NET 11; net10.0 loads in both. -->
+    <TargetFramework>net10.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Put MonoMod & co. next to VbcsPatch.dll so the startup hook can load them. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- MonoMod also ships an IgnoresAccessChecksToAttribute; the publicizer's source copy wins, which is what we want. -->
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      Harmony 2.4.3 / 3.0.0-rc.3 bundle a MonoMod without .NET 11 support
+      ("CoreCLR version 11.0.0 is not supported"); RuntimeDetour 25.4 ships Core110Runtime.
+    -->
+    <PackageReference Include="MonoMod.RuntimeDetour" Version="25.4.0-prerelease.1" />
+
+    <!--
+      Compile-only reference to Roslyn: the compiler server supplies the real assembly at runtime.
+      5.0.0 is the oldest 5.x; the CoreCLR binder accepts any higher 5.x at runtime, but not a lower one.
+      Field and method shapes are validated at patch time, so a Roslyn that has moved on just skips the patch.
+    -->
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.0.0" ExcludeAssets="runtime" PrivateAssets="all" />
+
+    <!-- Publicizes Microsoft.CodeAnalysis at compile time and emits IgnoresAccessChecksTo so the patch can touch internals directly. -->
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.2" PrivateAssets="all" />
+    <Publicize Include="Microsoft.CodeAnalysis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Not used from code; it just lands VbcsPatch.Hook.dll in the same output folder. -->
+    <ProjectReference Include="..\VbcsPatch.Hook\VbcsPatch.Hook.csproj" />
+  </ItemGroup>
+
+</Project>
